@@ -13,7 +13,7 @@ export default function App() {
   const cities = jsonData.cities;
 
   const [timezone, setTimezone] = useState(null);
-
+  const [tooltip, showTooltip] = useState(true);
   const [slidePostion, setSlidePostion] = useState({
     transform: "translateX(0px)",
     width: "0px",
@@ -63,12 +63,11 @@ export default function App() {
   const handleChange = (e) => {
     setCurrent(e.target);
     //this is just to show the city.section valuse in use
-    console.dir(`"${e.target.value}" was selected`);
+    console.log(`"${e.target.value}" was selected`);
   };
 
   const getTime = (city) => {
     let zone = "";
-    console.log(city);
     switch (city) {
       case "cupertino":
         zone = "America/Los_Angeles";
@@ -121,7 +120,12 @@ export default function App() {
                 <label
                   htmlFor={`tab${index}`}
                   data-tip={getTime(city.section)}
-                 // data-tip="test"
+                  //Work around for ReactTooltip autohide not working
+                  onMouseEnter={() => showTooltip(true)}
+                  onMouseLeave={() => {
+                    showTooltip(false);
+                    setTimeout(() => showTooltip(true), 50);
+                  }}
                 >
                   {city.label}
                 </label>
@@ -134,7 +138,7 @@ export default function App() {
           className="segmented-control__color"
         />
       </div>
-      <ReactTooltip place="bottom" type="info" effect="solid" />
+      {tooltip && <ReactTooltip place="bottom" type="info" effect="solid" />}
     </>
   );
 }
